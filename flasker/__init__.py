@@ -49,8 +49,8 @@ def create_app(test_config=None):
     from . import db
     with app.app_context():
         logger.info(f"initializing Database object ...")
+        db.init_db()
         db.init_app(app=app)
-        #db.init_db()
 
 
     logger.info(f"initializing Blueprints ...")
