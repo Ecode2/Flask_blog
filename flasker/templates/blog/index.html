@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %} Home Page {% endblock title %}
+
+{% block header %} 
+
+    <section class="text-white">
+        <div class="bg-dark">
+            <div class="border rounded border-0 d-flex flex-column justify-content-center align-items-center p-4 py-5 ratio-21x9 hero-img " style="background: linear-gradient(rgba(0,123,255,0.2), rgba(0,123,255,0.2)), url({{url_for('static', filename='images/landing_image.jpg')}}) center / cover;height: 80vh;">
+                <div class="row">
+                    <div class="col-md-10 col-xl-8 text-center d-flex d-sm-flex d-md-flex justify-content-center align-items-center mx-auto justify-content-md-start align-items-md-center justify-content-xl-center">
+                        <div>
+                            <h1 class="text-uppercase fw-bold mb-3">Dive Into <br />Technology with Flasker</h1>
+                            <p class="mb-4">A tech blog that teaches and explains important concepts and practical applications of programming and promises to deliever the latest and most intresting topics in the world of tech.</p>
+                            
+                            {% if not g.user %}
+                            <a id="hero-btn" class="btn btn-outline-primary rounded-5 fs-5 me-2 py-2 px-4" href="{{url_for('auth.register')}}">SignUp</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock header %}
+
+{% block content %}
+
+    <section>
+
+        
+        <article class="container-sm py-4 py-xl-5">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2>Articles</h2>
+                    <p class="w-lg-60">Get ready to dive into vast amounts of knowledge written in an elegant manner specifically for better understanding.</p>
+                </div>
+            </div>
+            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+                {% for post in posts%}
+                <div class="col">
+                    <div class="card shadow overflow-hidden border-primary-subtle" id="card-animation">
+                        {% if post['img'] %}<img class="card-img-top w-100 d-block fit-cover " style="height: 250px;" src="{{url_for('static', filename=post['img'])}}" alt="Image of article: {{ post['title'] }}">
+                        {% else %} <img class="card-img-top w-100 d-block fit-cover" style="height: 250px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                        {% endif %}
+                        
+                        <div class="card-body p-4">
+
+                            {% if g.user["id"] == post["author_id"] %}
+                            <a class="text-primary card-text mb-0" href="{{url_for('blog.update', id=post['id'])}}">Update</a>
+                            {% endif %}
+
+                            <h4 class="card-title">{{post["title"]}}</h4>
+                            <p class="card-text">
+                                {{ post["body"][:150] }}.
+                                <a class="ps-2 d-flex justify-content-center cursor-pointer align-items-center" href="{{url_for("blog.blog_post", id=post["id"])}}">Continue reading...</a>
+                            </p>
+
+                            <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                                <div>
+                                    <p class="fw-bold mb-0">{{ post['username'] }}</p>
+                                    <p class="text-muted mb-0">{{ post['created'].strftime('%Y-%m-%d') }}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </article>
+    </section>
+
+{% endblock content %}

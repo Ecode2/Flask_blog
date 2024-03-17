@@ -1,0 +1,9 @@
+flask
+pathlib
+logging
+gunicorn
+setuptools
+sqlite3
+click
+functools
+waitress

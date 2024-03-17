@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %} Admin Pannel {% endblock title %}
+
+{% block navItem %}
+<li class="nav-item mx-2"><a href="#Users" class="nav-link ps-2 d-flex justify-content-end cursor-pointer align-items-center">Users</a></li>
+<li class="nav-item mx-2"><a href="#Articles" class="nav-link ps-2 d-flex justify-content-end cursor-pointer align-items-center">Articles</a></li>
+{% endblock navItem %}
+
+{% block content %}
+
+    <section id="Users">
+
+        <article class="container-sm my-5 py-5 py-xl-5">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2>Users</h2>
+                </div>
+            </div>
+            <div class="row gy-4 row-cols-2 row-cols-md-3 row-cols-xl-4">
+                {% for user in users %}
+                <div class="col">
+                    <div class="card shadow overflow-hidden border-primary-subtle py-3" id="card-animation">
+                        
+                        <div class="d-flex justify-content-center align-items-center">
+                        <img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                        </div>    
+
+                        <div class="card-body p-4">
+
+                            <h4 class="card-title fw-bold text-center mb-0">{{user['username']}}</h4>
+                            <p class="card-text text-center">
+                                {{user['email']}}
+                            </p>
+
+                            <div class="d-flex justify-content-center align-items-center">
+                                <form action="{{ url_for('admin.delete', id=user['id'], username=user['username']) }}" method="post">
+                                    <button class="btn btn-outline-danger rounded-4" type="submit" onclick="return confirm('Do you really want to delete user {{user['username']}}'s account')" >Delete</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </article>
+
+    </section>
+
+
+
+    <section id="Articles">
+
+        <article class="container-sm py-4 py-xl-5">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2>Articles</h2>
+                </div>
+            </div>
+            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+                {% for post in posts%}
+                <div class="col">
+                    <div class="card shadow overflow-hidden border-primary-subtle" id="card-animation">
+                        {% if post['img'] %}<img class="card-img-top w-100 d-block fit-cover " style="height: 250px;" src="{{url_for('static', filename=post['img'])}}" alt="Image of article: {{ post['title'] }}">
+                        {% else %} <img class="card-img-top w-100 d-block fit-cover" style="height: 250px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                        {% endif %}
+                        
+                        <div class="card-body p-4">
+
+                            <div class="d-flex justify-content-around">
+                                <a class="text-primary card-text mb-0" href="{{url_for('blog.update', id=post['id'])}}">Update</a>
+                                <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+                                    <a class="text-primary card-text mb-0" type="submit" onclick="return confirm('Are you sure?')" >Delete</a>
+                                </form>
+                            </div>
+
+                            <h4 class="card-title">{{post["title"]}}</h4>
+                            <p class="card-text">
+                                {{ post["body"][:150] }}.
+                                <a class="ps-2 d-flex justify-content-center cursor-pointer align-items-center" href="{{url_for("blog.blog_post", id=post["id"])}}">Continue reading...</a>
+                            </p>
+
+                            <div class="d-flex"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                                <div>
+                                    <p class="fw-bold mb-0">{{ post['username'] }}</p>
+                                    <p class="text-muted mb-0">{{ post['created'].strftime('%Y-%m-%d') }}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </article>
+
+    </section>
+
+{% endblock content %}

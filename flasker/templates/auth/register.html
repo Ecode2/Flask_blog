@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} Signup New Account {% endblock title %}
+
+{% block content %}
+
+<section class="position-relative my-5 py-4 py-xl-5">
+    <div class="container position-relative py-5">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+                <div class="card mb-5 border-primary-subtle">
+                    <div class="card-body p-sm-5">
+                        <h2 class="text-center text-capitalize mb-4">Register</h2>
+                        <form method="post">
+
+                            <div class="form-floating mb-3">
+                                <input id="username" name="username" class="form-control" type="text" required {% if request.form["username"] %} value="{{request.form["username"]}}" {% endif %}/>
+                                <label for="username">Username</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input id="email" class="form-control" type="email" name="email" required {% if request.form["email"] %} value="{{request.form["email"]}}" {% endif %}/>
+                                <label for="email">Email</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input id="password " class="form-control" type="password" name="password" required {% if request.form["email"] %} value="{{request.form["email"]}}" {% endif %}/>
+                                <label for="password">Password</label>
+                            </div>
+
+                            <div class="d-flex justify-content-center align-items-center">
+
+                                <button id="hero-btn" class="btn btn-outline-primary w-50 rounded-4" type="submit"> Register </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock content %}

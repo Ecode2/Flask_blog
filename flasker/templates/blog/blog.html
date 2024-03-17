@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %} Article -- {{post['title']}} -- {% endblock title %}
+
+{% block navItem %}
+    {% if g.user["id"] == post["author_id"] %}
+    <li class="nav-item mx-2"><a href="{{url_for('blog.update', id=post['id'])}}"  class="nav-link ps-2 d-flex justify-content-end cursor-pointer align-items-center">Edit</a> </li>
+    {% endif %}
+{% endblock navItem %}
+
+
+{% block content %}
+
+    <section>
+        <article class="container-md my-5">
+
+            <div class="container-sm pt-5" style="max-width: 690px;">
+
+                <h1 class="text-center" style="font-family: Roboto, sans-serif;">{{ post['title'] }}</h1>
+                
+                <div class="w-auto border border-primary-subtle">
+                    {% if post['img'] %} <img class="w-100 d-block" style="height: 67vh;" src="{{url_for('static', filename=post['img'])}}" alt="Image of article: {{ post['title'] }}">
+                    {% else %} <img class="w-100 d-block" style="height: 67vh;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
+                    {% endif %}
+                </div>
+                
+                <p class="text-end"> By {{ user['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }} </p>
+            
+                <div class="text">
+                    <p>{{ post["body"] | safe }}</p>
+                </div>
+            </div>
+
+        </article>
+
+    </section>
+
+{% endblock content %}

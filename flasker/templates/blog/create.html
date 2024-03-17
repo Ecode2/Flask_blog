@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} Create A New Article {% endblock title %}
+
+
+{% block content %}
+
+
+    <section class="position-relative my-5 py-4 py-xl-5">
+        <div class="container position-relative py-5">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+                    <div class="card mb-5 border-primary-subtle">
+                        <div class="card-body p-sm-5">
+                            <h2 class="text-center text-capitalize mb-4">New Article</h2>
+                            <form method="post" enctype=multipart/form-data>
+
+                                <div class="form-floating mb-3">
+                                    <input id="title" name="title" class="form-control" type="text" value="{{request.form["title"]}}" required />
+                                    <label for="title">Title</label>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <input id="title-img" class="form-control" type="file" accept="image/*" name="img" value="{{request.form['img']}}" />
+                                    <label for="title-img">Image</label>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    <textarea id="body" class="form-control" name="body" cols="45" rows="10" required minlength="160" style="height: 200px;" > {{request.form["body"]}} </textarea>
+                                    <label for="body">Article</label>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+
+                                    <button id="hero-btn" class="btn btn-outline-primary w-50 rounded-4" type="submit" > Post </button>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}
+    

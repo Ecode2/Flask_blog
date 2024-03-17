@@ -1,0 +1,79 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    /* FONTS */
+    --FONT-SIZE: clamp(1vh 4vh 5vh);
+    --FONT-SIZE1: clamp(1rem, 2vh, 1.5rem);
+    --FONT-FAMILY-HDR: Cambria, Cochin, Georgia, Times, 'Times New Roman',
+    --FONT-WEIGHT-LABEL:400;
+
+    /* COLOR */
+    --LIGHT: #f4f4f4;
+    --DARK: #000;
+    --OUTLINE-COLOR: #377ba8;
+    --FONT-COLOR: #000;
+    --INPUT-BGCOLOR:#fff;
+
+    /* BORDERS AND SHADOWS */
+    --BTN-SUCCESS: #377ba8;
+    --RADIUS: 8px;
+    --BTN-OUTLINE: solid  2px var(--OUTLINE-COLOR);
+    --BORDER-RADIUS:5px;
+    --BORDERS:none;
+    --INPUT-SHADOW: 0 0 1px var(--SHADOW-COLOR);
+
+    /* STANDARD MARGIN */
+    --MARGIN: 10px;
+    --FORM_MARGIN: 25px;
+    --LABEL-MARGIN: 0 0 0 10px;
+
+    /* STANDARD PADDING */
+    --PADDING: 5px;
+    --INPUT-PADDING:  20px 12px;
+}
+
+#nav {
+    backdrop-filter: blur(100px);
+}
+
+#hero-btn {
+    border-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-bg-subtle);
+}
+#hero-btn:hover {
+    background-color: var(--OUTLINE-COLOR);
+    color: var(--bs-primary-bg-subtle);
+}
+
+#del-btn {
+    border-color: var(--bs-danger-bg-subtle);
+    color: crimson;
+}
+#del-btn:hover {
+    background-color: crimson;
+    color: var(--bs-primary-bg-subtle);
+}
+
+
+.border-blue {
+    border-color: var(--BTN-SUCCESS);
+}
+.z-index-1 {
+    z-index: 1;
+}
+.z-index-2 {
+    z-index: 2;
+}
+.z-index-5 {
+    z-index: 5;
+}
+.z-index-7 {
+    z-index: 7;
+}
+.z-index-10 {
+    z-index: 10;
+}
