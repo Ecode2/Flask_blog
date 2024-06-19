@@ -1,14 +1,12 @@
+from flask import flash, Blueprint, render_template, request, url_for, redirect, g, send_from_directory
+import psycopg2.extras
 from werkzeug.exceptions import abort
 from flasker.auth import login_required
 from flasker.db import get_db
-from flasker import logger
 from pathlib import Path
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 import os
 from werkzeug.utils import secure_filename
-from flask import render_template, request, url_for, redirect, Blueprint, flash, g, send_from_directory, session
-
-from flask import Blueprint, render_template
 
 bp = Blueprint('blog', __name__)
 
@@ -18,10 +16,14 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # Required functions
 def get_post(id, check_author=True):
 
-    post = get_db().execute("""
+    connection = get_db()
+    db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    db.execute("""
         SELECT p.id, title, img, body, created, author_id, username
-        FROM post p JOIN user u ON p.author_id= u.id
-        WHERE p.id = ?""",(id,)).fetchone()
+        FROM post p JOIN users u ON p.author_id= u.id
+        WHERE p.id = %d""",(id,))
+    post = db.fetchone()
 
     if post is None:
         abort(404, f"Post id {id} doesn't exists.")
@@ -43,11 +45,14 @@ def allowed_file(filename):
 
 @bp.route('/')
 def index():
-    db = get_db()
-    posts = db.execute("""
+    connection = get_db()
+    db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    db.execute("""
         SELECT p.id, title, img, body, created, author_id, username
-        FROM post p JOIN user u ON p.author_id = u.id
-        ORDER BY created DESC""").fetchall()
+        FROM post p JOIN users u ON p.author_id = u.id
+        ORDER BY created DESC""")
+    posts = db.fetchall()
     
     
     return render_template('blog/index.html', posts=posts)
@@ -55,10 +60,14 @@ def index():
 @bp.route("/post/<int:id>")
 def blog_post(id: int):
 
-    db = get_db()
+    connection = get_db()
+    db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    post = db.execute("SELECT * FROM post WHERE id=(?)", (id,)).fetchone()
-    user = db.execute("SELECT * FROM user WHERE id=(?)", (post['author_id'], )).fetchone()
+    db.execute("SELECT * FROM post WHERE id=(%d)", (id,))
+    post = db.fetchone()
+
+    db.execute("SELECT * FROM users WHERE id=(%d)", (post['author_id'], ))
+    user = db.fetchone()
 
     return render_template('blog/blog.html', post=post, user=user)
  
@@ -89,11 +98,13 @@ def create():
 
             saveimg = "images/" + imgName
 
-            db = get_db()
+            connection = get_db()
+            db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
             db.execute(
-                "INSERT INTO post (title, img, body, author_id) VALUES (?, ?, ?, ?)", (title, saveimg, body, g.user["id"])
+                "INSERT INTO post (title, img, body, author_id) VALUES (%s, %s, %s, %d)", (title, saveimg, body, g.user["id"])
             )
-            db.commit()
+            connection.commit()
             flash("Post uploaded successfully", category="info")
             return redirect(url_for("blog.index"))
         
@@ -136,19 +147,23 @@ def update(id):
                 saveimg = "images/" + imgName
 
                 #Update database
-                db = get_db()
-                db.execute("UPDATE post SET title = ?, img = ?, body = ? WHERE id= ?", (title, saveimg, body, id))
+                connection = get_db()
+                db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-                db.commit()
+                db.execute("UPDATE post SET title = %s, img = %s, body = %s WHERE id= %d", (title, saveimg, body, id))
+
+                connection.commit()
                 flash("Post updateded successfully", category="info")
                 return redirect(url_for("blog.index"))
 
 
             # Update database
-            db = get_db()
-            db.execute("UPDATE post SET title = ?, body = ? WHERE id= ?", (title, body, id))
+            connection = get_db()
+            db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            
+            db.execute("UPDATE post SET title = %s, body = %s WHERE id= %d", (title, body, id))
 
-            db.commit()
+            connection.commit()
             flash("Post updateded successfully", category="info")
 
             if check_password_hash(g.user["password"], os.getenv('ADMIN_PASSWORD')):
@@ -164,10 +179,11 @@ def update(id):
 def delete(id):
 
     get_post(id)
+    connection = get_db()
     db = get_db()
 
-    db.execute("DELETE FROM POST WHERE id = ?", (id, ))
-    db.commit()
+    db.execute("DELETE FROM POST WHERE id = %d", (id, ))
+    connection.commit()
     flash("Post deleted successfully", category="info")
 
     if check_password_hash(g.user["password"], os.getenv('ADMIN_PASSWORD')):

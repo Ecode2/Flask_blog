@@ -4,5 +4,5 @@ import waitress
 app = create_app()
 
 if __name__ == "__main__":
-    #app.run(host="localhost", port=5500, debug=True)
-    waitress.serve(app=app)
+    app.run(host="localhost", port=8080, debug=True)
+    #waitress.serve(app=app)

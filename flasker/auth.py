@@ -1,4 +1,6 @@
 import functools
+
+import psycopg2.extras
 from flasker.db import get_db
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -17,7 +19,10 @@ def load_logged_in_user():
     
     # connect to database if user is logged in
     else:
-        g.user = get_db().execute("SELECT * FROM user WHERE ID = ?",(user_id,)).fetchone()
+        connection = get_db()
+        db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        db.execute("SELECT * FROM users WHERE ID = %s",(user_id,))
+        g.user = db.fetchone()
 
 
 @bp.route('/register', methods=["GET", "POST"])
@@ -31,7 +36,8 @@ def register():
         password = request.form["password"]
 
         # connect to database
-        db = get_db()
+        connection = get_db()
+        db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # ensure form data is filled
         error = None
@@ -43,16 +49,16 @@ def register():
             error = "Password is required"
 
         # ensure that account dosn't exists
-        elif db.execute("SELECT id FROM user WHERE username = ? ",(username,)).fetchone() is not None:
+        elif db.execute("SELECT id FROM users WHERE username = %s ",(username,)) and db.fetchone() is not None:
             error = f"User {username} is in use! "
-        elif db.execute("SELECT id FROM user WHERE email = ? ",(email,)).fetchone() is not None:
+        elif db.execute("SELECT id FROM users WHERE email = %s ",(email,)) and db.fetchone() is not None:
             error = f"Email {email} is in use! "
 
         # if there is no error add account to the database
         if error is None:
             flash("Account created successfully", category="info")
-            db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)", (username, email, generate_password_hash(password)))
-            db.commit()
+            db.execute("INSERT INTO users (username, email, password) VALUES (%s, %s, %s)", (username, email, generate_password_hash(password)))
+            connection.commit()
             return redirect(url_for("auth.login"))
         
         flash(error, category="danger")
@@ -72,12 +78,14 @@ def login():
         password = request.form["password"]
 
         # connect to database
-        db = get_db()
+        connection = get_db()
+        db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
         # check user info
-        user  = db.execute("SELECT * FROM user WHERE username= ? ", (username,)).fetchone()
+        db.execute("SELECT * FROM users WHERE username = %s ", (username,))
+        user  = db.fetchone()
 
-
+        print(user)
         # ensure user info is correct
         error = None
         if user is None:

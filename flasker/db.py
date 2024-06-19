@@ -1,29 +1,23 @@
-import sqlite3, psycopg2, click
+import sqlite3, psycopg2, click, psycopg2.extras
 from  flask import current_app, g
 from flask.cli import with_appcontext
 
 def get_db():
     if "db" not in g:
 
-        #posgresql
-        try:
-            g.db = psycopg2.connect(
-                database=current_app.config["POSTGRES_DATABASE"],
-                user=current_app.config["POSTGRES_USER"],
-                password=current_app.config["POSTGRES_PASSWORD"],
-                host=current_app.config["POSTGRES_HOST"],
-                port=current_app.config["POSTGRES_PORT"],
-                
-            )
-            g.db.row_factory = psycopg2.extras.DictCursor
-        except Exception as e:
-            raise e
-            #return None
         
-        """ g.db = sqlite3.connect(
-            current_app.config["DATABASE"],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
+        database = psycopg2.connect(current_app.config["POSTGRES_DB"])
+        """ database = psycopg2.connect(
+            database=current_app.config["POSTGRES_DATABASE"],
+            user=current_app.config["POSTGRES_USER"],
+            password=current_app.config["POSTGRES_PASSWORD"],
+            host=current_app.config["POSTGRES_HOST"],
+            port=current_app.config["POSTGRES_PORT"],
+        ) """
+        #g.db = database.cursor()
+        g.db = database
+
+        """ g.db = sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
         g.db.row_factory = sqlite3.Row """
 
     return g.db
@@ -36,10 +30,11 @@ def close_db(e=None):
 
 
 def init_db():
-    db = get_db()
+    connection = get_db()
+    db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     with current_app.open_resource("schema.sql") as f:
-        db.executescript(f.read().decode("utf8"))
+        db.execute(f.read().decode("utf8"))
 
 # click module for quick bash scripts
 @click.command("init-db")
