@@ -5,6 +5,7 @@
 import os, logging
 from flask import Flask
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Initialising logger object
 hdlr = logging.StreamHandler()
@@ -13,16 +14,24 @@ hdlr.formatter = logging.Formatter("%(filename)s :: %(funcName)s :: %(levelname)
 logger = logging.Logger("FLASKER_logger")
 logger.addHandler(hdlr)
 
-
+ 
 def create_app(test_config=None):
 
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     logger.info(f"Server object created")
+    load_dotenv()
 
+    print(os.getenv("POSTGRES_DB"))
     app.config.from_mapping(
             SECRET_KEY=b'\xf9\xbd\'}y"\xdf\xbe\r\xd7\xb4\xcfa[T\xd4',
-            DATABASE=os.path.join(app.instance_path, "flasker.sqlite"),
+            DATABASE=os.path.join(app.instance_path, "flasker.sqlite"), #os.getenv("POSTGRES_DB") 
+            POSTGRES_DATABASE=os.getenv("POSTGRES_DB"),
+            POSTGRES_USER=os.getenv("POSTGRES_USER"),
+            POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD"),
+            POSTGRES_HOST=os.getenv("POSTGRES_HOST"),
+            POSTGRES_PORT=os.getenv("POSTGRES_PORT")
+
     )
 
     UPLOAD_FOLDER = Path(__file__).parent/"static"/"images"

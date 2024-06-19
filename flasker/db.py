@@ -1,15 +1,30 @@
-import sqlite3
-import click
+import sqlite3, psycopg2, click
 from  flask import current_app, g
 from flask.cli import with_appcontext
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(
+
+        #posgresql
+        try:
+            g.db = psycopg2.connect(
+                database=current_app.config["POSTGRES_DATABASE"],
+                user=current_app.config["POSTGRES_USER"],
+                password=current_app.config["POSTGRES_PASSWORD"],
+                host=current_app.config["POSTGRES_HOST"],
+                port=current_app.config["POSTGRES_PORT"],
+                
+            )
+            g.db.row_factory = psycopg2.extras.DictCursor
+        except Exception as e:
+            raise e
+            #return None
+        
+        """ g.db = sqlite3.connect(
             current_app.config["DATABASE"],
             detect_types=sqlite3.PARSE_DECLTYPES
         )
-        g.db.row_factory = sqlite3.Row
+        g.db.row_factory = sqlite3.Row """
 
     return g.db
 
