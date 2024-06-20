@@ -180,7 +180,7 @@ def delete(id):
 
     get_post(id)
     connection = get_db()
-    db = get_db()
+    db = connection.cursor()
 
     db.execute("DELETE FROM POST WHERE id = %d", (id, ))
     connection.commit()
