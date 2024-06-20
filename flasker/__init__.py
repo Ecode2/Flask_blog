@@ -21,11 +21,15 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     logger.info(f"Server object created")
     load_dotenv(override=True)
-
+    Database="postgresql://%s:%s@%s:5432//%s?sslmode=require".format(os.getenv("POSTGRES_USER"), 
+                                                               os.getenv("POSTGRES_PASSWORD"),
+                                                               os.getenv("POSTGRES_HOST"),
+                                                               os.getenv("POSTGRES_DATABASE"))
+    print(Database, 'dfhhvfdedcgjtffgh')
     app.config.from_mapping(
             SECRET_KEY=b'\xf9\xbd\'}y"\xdf\xbe\r\xd7\xb4\xcfa[T\xd4',
             DATABASE=os.path.join(app.instance_path, "flasker.sqlite"),
-            POSTGRES_DB=os.getenv("POSTGRES_DB"),
+            POSTGRES_DB=Database,
             POSTGRES_DATABASE=os.getenv("POSTGRES_DATABASE"),
             POSTGRES_USER=os.getenv("POSTGRES_USER"),
             POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD"),
