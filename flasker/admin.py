@@ -56,8 +56,8 @@ def delete(id, username):
        flash("User Doesn't  Exist")
        return redirect(url_for('admin.admin_pannel'))
 
-    db.execute("DELETE FROM users WHERE id = %d And username = %s", (id, username))
-    db.execute("DELETE FROM post WHERE author_id = %d", (id, ))
+    db.execute("DELETE FROM users WHERE id = %s And username = %s", (id, username))
+    db.execute("DELETE FROM post WHERE author_id = %s", (id, ))
     #db.commit()
 
     flash(f"User {username} and their post was deleted", category="success")

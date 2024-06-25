@@ -5,7 +5,7 @@ from flasker.auth import login_required
 from flasker.db import get_db
 from pathlib import Path
 from werkzeug.security import check_password_hash
-import os
+import os, markdown
 from werkzeug.utils import secure_filename
 
 bp = Blueprint('blog', __name__)
@@ -22,7 +22,7 @@ def get_post(id, check_author=True):
     db.execute("""
         SELECT p.id, title, img, body, created, author_id, username
         FROM post p JOIN users u ON p.author_id= u.id
-        WHERE p.id = %d""",(id,))
+        WHERE p.id = %s""",(id,))
     post = db.fetchone()
 
     if post is None:
@@ -63,10 +63,10 @@ def blog_post(id: int):
     connection = get_db()
     db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    db.execute("SELECT * FROM post WHERE id=(%d)", (id,))
+    db.execute("SELECT * FROM post WHERE id=(%s)", (id,))
     post = db.fetchone()
 
-    db.execute("SELECT * FROM users WHERE id=(%d)", (post['author_id'], ))
+    db.execute("SELECT * FROM users WHERE id=(%s)", (post['author_id'], ))
     user = db.fetchone()
 
     return render_template('blog/blog.html', post=post, user=user)
@@ -94,15 +94,20 @@ def create():
             # Save the image
             imgName = secure_filename(img.filename)
             imgPath = os.path.join(UPLOAD_FOLDER, imgName)
-            img.save(imgPath)
+            print(imgPath, imgName, "iuskjnvrverviu")
+            if imgName:
+                img.save(imgPath)
 
             saveimg = "images/" + imgName
+
+            # convert markdown to html
+            html_body = markdown.markdown(body)
 
             connection = get_db()
             db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
             db.execute(
-                "INSERT INTO post (title, img, body, author_id) VALUES (%s, %s, %s, %d)", (title, saveimg, body, g.user["id"])
+                "INSERT INTO post (title, img, body, author_id) VALUES (%s, %s, %s, %s)", (title, saveimg, html_body, g.user["id"])
             )
             connection.commit()
             flash("Post uploaded successfully", category="info")
@@ -146,11 +151,14 @@ def update(id):
 
                 saveimg = "images/" + imgName
 
+                # convert markdown to html
+                html_body = markdown.markdown(body) 
+
                 #Update database
                 connection = get_db()
                 db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-                db.execute("UPDATE post SET title = %s, img = %s, body = %s WHERE id= %d", (title, saveimg, body, id))
+                db.execute("UPDATE post SET title = %s, img = %s, body = %s WHERE id= %s", (title, saveimg, html_body, id))
 
                 connection.commit()
                 flash("Post updateded successfully", category="info")
@@ -161,7 +169,7 @@ def update(id):
             connection = get_db()
             db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             
-            db.execute("UPDATE post SET title = %s, body = %s WHERE id= %d", (title, body, id))
+            db.execute("UPDATE post SET title = %s, body = %s WHERE id= %s", (title, body, id))
 
             connection.commit()
             flash("Post updateded successfully", category="info")
@@ -182,7 +190,7 @@ def delete(id):
     connection = get_db()
     db = connection.cursor()
 
-    db.execute("DELETE FROM POST WHERE id = %d", (id, ))
+    db.execute("DELETE FROM POST WHERE id = %s", (id, ))
     connection.commit()
     flash("Post deleted successfully", category="info")
 

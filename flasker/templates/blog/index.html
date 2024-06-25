@@ -51,7 +51,7 @@
                             <a class="text-primary card-text mb-0" href="{{url_for('blog.update', id=post['id'])}}">Update</a>
                             {% endif %}
 
-                            <h4 class="card-title">{{post["title"] |safe }} </h4>
+                            <h3 class="card-title">{{post["title"] |safe }} </h3>
                             <p class="card-text">
                                 {{ post["body"][:150] }}.
                                 <a class="ps-2 d-flex justify-content-center cursor-pointer align-items-center" href="{{url_for("blog.blog_post", id=post["id"])}}">Continue reading...</a>
