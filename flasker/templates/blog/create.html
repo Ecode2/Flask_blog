@@ -27,7 +27,7 @@
 
                                 <div class="form-floating mb-3">
                                     <textarea id="body" class="form-control" name="body" cols="45" rows="10" required minlength="160" style="height: 200px;" > {{request.form["body"]}} </textarea>
-                                    <label for="body">Article</label>
+                                    
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center">
 
@@ -44,3 +44,26 @@
 
 {% endblock content %}
     
+{% block script %}
+    <script>
+        const simplemde = new SimpleMDE({
+            autosave: {
+                enabled: true,
+                uniqueId: "MyUniqueID",
+                delay: 1000,
+            },
+            element: document.getElementById("body"),
+            insertTexts: {
+                horizontalRule: ["", "\n\n-----\n\n"],
+                image: ["![](http://", ")"],
+                link: ["[", "](http://)"],
+                table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"],
+            },
+            placeholder: "Type here...",
+            previewRender: function(plainText) {
+                return customMarkdownParser(plainText); // Returns HTML from a custom parser
+            },
+        });
+         const mdText = simplemde.value();
+    </script>
+{% endblock script %}
