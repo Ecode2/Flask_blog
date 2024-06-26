@@ -76,9 +76,9 @@
                                 </form>
                             </div>
 
-                            <h4 class="card-title">{{post["title"]}}</h4>
+                            <h4 class="card-title">{{post["title"]|safe }}</h4>
                             <p class="card-text">
-                                {{ post["body"][:150] }}.
+                                {{ post["body"][:150]|safe }}.
                                 <a class="ps-2 d-flex justify-content-center cursor-pointer align-items-center" href="{{url_for("blog.blog_post", id=post["id"])}}">Continue reading...</a>
                             </p>
 
